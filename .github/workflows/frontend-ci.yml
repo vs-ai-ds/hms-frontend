@@ -18,16 +18,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js 20
+      - name: Enable Corepack & install pnpm 9
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+        shell: bash
+
+      - name: Setup Node.js with pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-
-      - name: Enable Corepack & install pnpm 9
-        run: |
-          corepack enable
-          corepack prepare pnpm@9 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

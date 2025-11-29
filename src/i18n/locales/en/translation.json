@@ -1,0 +1,16 @@
+{
+  "appTitle": "Hospital Management System",
+  "appSubtitle": "Multi-tenant HMS for PHC / CHC / hospitals",
+
+  "nav.dashboard": "Dashboard",
+  "nav.patients": "Patients",
+
+  "auth.login": "Login",
+  "auth.registerHospital": "Register a new hospital",
+
+  "auth.email": "Email",
+  "auth.password": "Password",
+
+  "tenant.registerTitle": "Register Hospital",
+  "tenant.registerSubtitle": "Self-onboard your hospital. After registration, use the admin credentials to log in and configure users."
+}

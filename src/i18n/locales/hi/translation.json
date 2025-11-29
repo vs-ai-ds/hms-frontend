@@ -1,0 +1,16 @@
+{
+  "appTitle": "अस्पताल प्रबंधन प्रणाली",
+  "appSubtitle": "बहु-किरायेदार PHC / CHC / अस्पतालों के लिए HMS",
+
+  "nav.dashboard": "डैशबोर्ड",
+  "nav.patients": "मरीज़",
+
+  "auth.login": "लॉगिन",
+  "auth.registerHospital": "नया अस्पताल रजिस्टर करें",
+
+  "auth.email": "ईमेल",
+  "auth.password": "पासवर्ड",
+
+  "tenant.registerTitle": "अस्पताल पंजीकरण",
+  "tenant.registerSubtitle": "अपने अस्पताल को स्वयं ऑनबोर्ड करें। रजिस्ट्रेशन के बाद, एडमिन क्रेडेंशियल्स से लॉगिन कर के यूज़र्स को कॉन्फ़िगर करें।"
+}

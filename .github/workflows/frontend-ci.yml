@@ -2,37 +2,32 @@ name: Frontend CI
 
 on:
   push:
-    paths:
-      - "Frontend/**"
-      - ".github/workflows/frontend-ci.yml"
+    branches: [ main, dev ]
   pull_request:
-    paths:
-      - "Frontend/**"
-      - ".github/workflows/frontend-ci.yml"
+    branches: [ main, dev ]
 
 jobs:
   frontend-build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: Frontend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Build
         env:

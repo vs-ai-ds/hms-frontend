@@ -8,6 +8,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -21,8 +24,12 @@
       "@app/*": ["app/*"],
       "@components/*": ["app/components/*"],
       "@features/*": ["app/features/*"],
-      "@lib/*": ["app/lib/*"]
+      "@lib/*": ["app/lib/*"],
+      "@types/*": ["types/*"]
     }
+  },
+  "rules": {
+    "deprecation/deprecation": "warn"
   },
   "include": ["src"]
 }

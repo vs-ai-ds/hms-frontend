@@ -5,83 +5,132 @@ import {
   Toolbar,
   Typography,
   Box,
-  IconButton,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
+  Divider,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import TranslateIcon from "@mui/icons-material/Translate";
+import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { clearAccessToken } from "@app/lib/auth";
 import { AppRoutes } from "@app/routes";
+import LanguageSwitcher from "@app/components/common/LanguageSwitcher";
+import { useAuthStore } from "@app/store/authStore";
 
 const TopBar: React.FC = () => {
-  const [userMenuAnchor, setUserMenuAnchor] = React.useState<null | HTMLElement>(null);
-  const [langAnchor, setLangAnchor] = React.useState<null | HTMLElement>(null);
+  const [userMenuAnchor, setUserMenuAnchor] =
+    React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
 
   const handleLogout = () => {
-    clearAccessToken();
-    navigate(AppRoutes.LOGIN, { replace: true });
+    const logout = useAuthStore.getState().logout;
+    logout();
+    window.localStorage.removeItem("access_token");
+    setUserMenuAnchor(null);
+    navigate(AppRoutes.LANDING, { replace: true });
   };
 
-  const changeLanguage = (lng: "en" | "hi") => {
-    i18n.changeLanguage(lng);
-    setLangAnchor(null);
+  const handleProfile = () => {
+    setUserMenuAnchor(null);
+    navigate(AppRoutes.PROFILE);
   };
+
+  const initials =
+    (user?.first_name?.[0] ?? "") + (user?.last_name?.[0] ?? "");
+  
+  const primaryRole = user?.roles?.[0]?.name || "";
+  const hospitalName = user?.tenant_name || "";
 
   return (
     <AppBar
       position="fixed"
+      elevation={0}
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: "#ffffff",
+        backgroundColor: "background.paper",
         color: "text.primary",
-        boxShadow: "0 2px 8px rgba(15,23,42,0.08)"
+        borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
       }}
     >
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          {t("appTitle")}
-        </Typography>
+        {/* Logo */}
+        <Box
+          component="img"
+          src="/logo.svg"
+          alt="HMS Logo"
+          sx={{
+            height: 40,
+            mr: 2,
+          }}
+        />
+        
+        {/* Hospital Name - Prominently displayed */}
+        {hospitalName && (
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            fontWeight={700}
+            color="primary"
+            sx={{ mr: 3 }}
+          >
+            {hospitalName}
+          </Typography>
+        )}
+
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Language toggle */}
-        <IconButton
-          color="inherit"
-          onClick={(e) => setLangAnchor(e.currentTarget)}
-          sx={{ mr: 1 }}
-        >
-          <TranslateIcon />
-        </IconButton>
-        <Menu
-          anchorEl={langAnchor}
-          open={Boolean(langAnchor)}
-          onClose={() => setLangAnchor(null)}
-        >
-          <MenuItem onClick={() => changeLanguage("en")}>English</MenuItem>
-          <MenuItem onClick={() => changeLanguage("hi")}>हिंदी</MenuItem>
-        </Menu>
+        <LanguageSwitcher />
 
-        {/* User avatar + logout */}
-        <IconButton
-          color="inherit"
+        {/* User info + menu */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            ml: 2,
+            cursor: "pointer",
+          }}
           onClick={(e) => setUserMenuAnchor(e.currentTarget)}
-          sx={{ p: 0 }}
         >
-          <Avatar sx={{ bgcolor: "#1d7af3" }}>DR</Avatar>
-        </IconButton>
+          <Box sx={{ textAlign: "right", display: { xs: "none", sm: "block" } }}>
+            <Typography variant="body2" fontWeight={600}>
+              {user?.first_name}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {primaryRole}
+            </Typography>
+          </Box>
+          <Avatar
+            sx={{
+              bgcolor: "primary.main",
+              width: 36,
+              height: 36,
+              fontSize: "0.875rem",
+            }}
+          >
+            {initials || "DR"}
+          </Avatar>
+        </Box>
+
         <Menu
           anchorEl={userMenuAnchor}
           open={Boolean(userMenuAnchor)}
           onClose={() => setUserMenuAnchor(null)}
         >
+          <MenuItem onClick={handleProfile}>
+            <PersonIcon fontSize="small" sx={{ mr: 1 }} />
+            {t("nav.profile", { defaultValue: "Profile" })}
+          </MenuItem>
+          <Divider />
           <MenuItem onClick={handleLogout}>
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
-            Logout
+            {t("auth.logout", { defaultValue: "Logout" })}
           </MenuItem>
         </Menu>
       </Toolbar>

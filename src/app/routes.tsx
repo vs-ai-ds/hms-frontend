@@ -1,7 +1,23 @@
+// src/app/routes.tsx
 export const AppRoutes = {
+  LANDING: "/",
   LOGIN: "/login",
   TENANT_REGISTER: "/hospitals/register",
-  DASHBOARD: "/",
-  PATIENTS: "/patients"
-  // Later: appointments, prescriptions, documents, etc.
+  VERIFY_EMAIL: "/verify-email",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  FIRST_LOGIN_CHANGE_PASSWORD: "/auth/first-login-change-password",
+  DASHBOARD: "/dashboard",
+  PATIENTS: "/patients",
+  PATIENT_DETAIL: "/patients/:id",
+  APPOINTMENTS: "/appointments",
+  PRESCRIPTIONS: "/prescriptions",
+  USERS: "/users",
+  SHARING: "/sharing",
+  SHARED_PATIENTS: "/patients/shared",
+  PROFILE: "/profile",
+  DEPARTMENTS: "/departments",
+  ROLES: "/roles",
+  STOCK_ITEMS: "/stock-items",
+  PLATFORM_TENANTS: "/platform/tenants",
 } as const;

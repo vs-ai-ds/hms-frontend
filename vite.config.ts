@@ -11,7 +11,8 @@ export default defineConfig({
       "@app": path.resolve(__dirname, "src/app"),
       "@components": path.resolve(__dirname, "src/app/components"),
       "@features": path.resolve(__dirname, "src/app/features"),
-      "@lib": path.resolve(__dirname, "src/app/lib")
+      "@lib": path.resolve(__dirname, "src/app/lib"),
+      "@types": path.resolve(__dirname, "src/types")
     }
   },
   server: {

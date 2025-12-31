@@ -1,0 +1,18 @@
+<svg width="380" height="48" viewBox="0 0 380 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue rounded square -->
+  <rect x="0" y="8" width="40" height="40" rx="10" fill="#0D6EFD"></rect>
+
+  <!-- Medical cross -->
+  <rect x="18" y="15" width="4" height="26" rx="2" fill="#FFFFFF"></rect>
+  <rect x="10" y="25" width="24" height="4" rx="2" fill="#FFFFFF"></rect>
+
+  <!-- Main text -->
+  <text x="56" y="28" font-family="Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="18" font-weight="700" fill="#0F172A">
+    HMS – Hospital Management System
+  </text>
+
+  <!-- Tagline -->
+  <text x="56" y="42" font-family="Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" font-weight="400" fill="#64748B">
+    Multi-tenant, secure hospital operations
+  </text>
+</svg>

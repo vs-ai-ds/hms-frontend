@@ -88,7 +88,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [heroVisible, setHeroVisible] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(0);
@@ -358,6 +358,11 @@ const LandingPage: React.FC = () => {
     },
   ];
 
+  const logoSrc =
+    i18n.language && i18n.language.startsWith("hi")
+      ? "/logo-hi.svg"
+      : "/logo.svg";
+
   return (
     <Box
       sx={{
@@ -368,7 +373,8 @@ const LandingPage: React.FC = () => {
       {/* Header */}
       <Box
         sx={{
-          py: 2.5,
+          py: { xs: 1.5, sm: 2.5 },
+          px: { xs: 1, sm: 0 },
           borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
           backgroundColor: "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(20px)",
@@ -378,24 +384,58 @@ const LandingPage: React.FC = () => {
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
         }}
       >
-        <Container maxWidth="lg">
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box display="flex" alignItems="center">
+        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2 } }}>
+          <Box 
+            display="flex" 
+            justifyContent="space-between" 
+            alignItems="center"
+            gap={{ xs: 1, sm: 2 }}
+            sx={{
+              flexWrap: { xs: "nowrap", sm: "nowrap" },
+            }}
+          >
+            <Box 
+              display="flex" 
+              alignItems="center" 
+              sx={{ 
+                flexShrink: 0,
+                minWidth: 0,
+              }}
+            >
               <Box
                 component="img"
-                src="/logo.svg"
+                src={logoSrc}
                 alt="HMS Logo"
-                sx={{ height: 56, width: "auto" }}
+                sx={{ 
+                  height: { xs: 36, sm: 56 }, 
+                  width: "auto",
+                  maxWidth: { xs: "150px", sm: "none" }
+                }}
               />
             </Box>
-            <Box display="flex" gap={2} alignItems="center">
+            <Box 
+              display="flex" 
+              gap={{ xs: 0.5, sm: 2 }} 
+              alignItems="center"
+              sx={{
+                flexShrink: 0,
+                minWidth: 0,
+              }}
+            >
               <Button
                 variant="outlined"
                 onClick={() => {
                   setTabValue(0);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 0.5, sm: 1 },
+                  minWidth: { xs: "60px", sm: "64px" },
+                  whiteSpace: "nowrap",
+                }}
               >
                 {t("landing.login", { defaultValue: "Login" })}
               </Button>
@@ -405,11 +445,20 @@ const LandingPage: React.FC = () => {
                   setTabValue(1);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 0.5, sm: 1 },
+                  minWidth: { xs: "60px", sm: "64px" },
+                  whiteSpace: "nowrap",
+                }}
               >
-                {t("landing.getStarted", { defaultValue: "Register Hospital" })}
+                {t("landing.getStarted", { defaultValue: "Get Started" })}
               </Button>
-              <LanguageSwitcher />
+              <Box sx={{ flexShrink: 0, ml: { xs: 0.5, sm: 0 } }}>
+                <LanguageSwitcher />
+              </Box>
             </Box>
           </Box>
         </Container>
@@ -1162,7 +1211,7 @@ const LandingPage: React.FC = () => {
               <Box display="flex" alignItems="center">
                 <Box
                   component="img"
-                  src="/logo.svg"
+                  src={logoSrc}
                   alt="HMS Logo"
                   sx={{ height: 48, width: "auto" }}
                 />

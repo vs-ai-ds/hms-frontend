@@ -269,6 +269,8 @@ const AppointmentsPage: React.FC = () => {
   const [selectedAppointmentId, setSelectedAppointmentId] = React.useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = React.useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = React.useState<any>(null);
+  const [rescheduleConfirmDialogOpen, setRescheduleConfirmDialogOpen] = React.useState(false);
+  const [appointmentPendingReschedule, setAppointmentPendingReschedule] = React.useState<any>(null);
   const [rescheduleDialogOpen, setRescheduleDialogOpen] = React.useState(false);
   const [appointmentToReschedule, setAppointmentToReschedule] = React.useState<any>(null);
   const [prescriptionDialogOpen, setPrescriptionDialogOpen] = React.useState(false);
@@ -1589,12 +1591,8 @@ const AppointmentsPage: React.FC = () => {
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         if (a.status === "CHECKED_IN") {
-                                          if (window.confirm(t("appointments.rescheduleCheckedInConfirm", {
-                                            defaultValue: "Rescheduling will remove patient from queue. Continue?",
-                                          }))) {
-                                            setAppointmentToReschedule(a);
-                                            setRescheduleDialogOpen(true);
-                                          }
+                                          setAppointmentPendingReschedule(a);
+                                          setRescheduleConfirmDialogOpen(true);
                                         } else {
                                           setAppointmentToReschedule(a);
                                           setRescheduleDialogOpen(true);
@@ -1770,6 +1768,46 @@ const AppointmentsPage: React.FC = () => {
             }}
           />
         </DialogContent>
+      </Dialog>
+      
+      {/* Reschedule Confirmation Dialog (for checked-in appointments) */}
+      <Dialog open={rescheduleConfirmDialogOpen} onClose={() => {
+        setRescheduleConfirmDialogOpen(false);
+        setAppointmentPendingReschedule(null);
+      }} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {t("appointments.reschedule", { defaultValue: "Reschedule Appointment" })}
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            {t("appointments.rescheduleCheckedInConfirm", {
+              defaultValue: "Rescheduling will remove patient from queue. Continue?",
+            })}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ pr: 3, pb: 2 }}>
+          <Button
+            onClick={() => {
+              setRescheduleConfirmDialogOpen(false);
+              setAppointmentPendingReschedule(null);
+            }}
+            color="inherit"
+          >
+            {t("common.cancel", { defaultValue: "Cancel" })}
+          </Button>
+          <Button
+            onClick={() => {
+              setAppointmentToReschedule(appointmentPendingReschedule);
+              setRescheduleConfirmDialogOpen(false);
+              setAppointmentPendingReschedule(null);
+              setRescheduleDialogOpen(true);
+            }}
+            variant="contained"
+            color="primary"
+          >
+            {t("common.yes", { defaultValue: "Yes" })}
+          </Button>
+        </DialogActions>
       </Dialog>
       
       {/* Reschedule Appointment Dialog */}

@@ -26,9 +26,17 @@ const LanguageSwitcher: React.FC = () => {
       <IconButton
         color="inherit"
         onClick={(e) => setAnchorEl(e.currentTarget)}
-        sx={{ ml: 1 }}
-        size="large">
-        <Typography fontWeight={700}>A | अ</Typography>
+        sx={{ 
+          ml: { xs: 0.5, sm: 1 },
+          p: { xs: 0.75, sm: 1 }
+        }}
+        size="small">
+        <Typography 
+          fontWeight={700}
+          sx={{ fontSize: { xs: "0.75rem", sm: "1rem" } }}
+        >
+          A | अ
+        </Typography>
       </IconButton>
       <Menu
         anchorEl={anchorEl}

@@ -22,7 +22,7 @@ const TopBar: React.FC = () => {
   const [userMenuAnchor, setUserMenuAnchor] =
     React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
 
   const handleLogout = () => {
@@ -44,6 +44,11 @@ const TopBar: React.FC = () => {
   const primaryRole = user?.roles?.[0]?.name || "";
   const hospitalName = user?.tenant_name || "";
 
+  const logoSrc =
+    i18n.language && i18n.language.startsWith("hi")
+      ? "/logo-hi.svg"
+      : "/logo.svg";
+
   return (
     <AppBar
       position="fixed"
@@ -60,7 +65,7 @@ const TopBar: React.FC = () => {
         {/* Logo */}
         <Box
           component="img"
-          src="/logo.svg"
+          src={logoSrc}
           alt="HMS Logo"
           sx={{
             height: 40,

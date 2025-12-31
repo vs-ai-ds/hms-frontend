@@ -9,9 +9,8 @@ This project was created as part of **HackArena 2.0 by Masaiverse x Platform Com
 ## 🔗 Related Repositories
 
 - **Frontend Repository** (this repository) - React-based frontend application
-- **[Backend Repository](../Backend/README.md)** - FastAPI-based backend API
+- **[Backend Repository](https://github.com/vs-ai-ds/hms-backend)** - FastAPI-based backend API
 
-> **Note:** If these are separate repositories, update the links above to point to the actual GitHub repository URLs.
 
 ## 🌐 Live Demo
 
@@ -61,16 +60,39 @@ This project was created as part of **HackArena 2.0 by Masaiverse x Platform Com
 📆 Appointment Detail — Full appointment information and actions
 ![Appointment detail dialog](docs/screenshots/appointment-detail.png)
 
+📝 Create Appointment — Create Appointment for OPD patient
+![Appointment detail dialog](docs/screenshots/create_appointment.png)
+
 ✅ Check-in Flow — Patient check-in and consultation workflow
 ![Appointment check-in interface](docs/screenshots/appointment-checkin.png)
+
+🔄 Reschedule Appointment — Easily modify appointment date or time
+![Reschedule appointment dialog](docs/screenshots/reschedule-appointment.png)
+
+🚫 Close Appointment — Mark appointments as completed or closed
+![Close appointment confirmation](docs/screenshots/close-appointment.png)
+
+❌ Cancel Appointment — Easily cancel scheduled appointments  
+![Cancel appointment dialog](docs/screenshots/cancel-appointment.png)
 
 ### Prescriptions
 
 💊 Prescriptions — Prescription management and dispensing
 ![Prescriptions list with status filters](docs/screenshots/prescriptions-page.png)
 
-📄 Prescription Form — Create and issue prescriptions
-![Prescription creation form](docs/screenshots/prescription-form.png)
+📄 Prescription Forms — Three types: for OPD appointments, without appointment, and for IPD patients  
+![OPD Prescription Form](docs/screenshots/prescription-form-opd.png)  
+![No Appointment Prescription Form](docs/screenshots/prescription-form-no-appointment.png)  
+![IPD Prescription Form](docs/screenshots/prescription-form-ipd.png)
+
+### Prescription Management Enhancements
+
+🐞 Issue Prescription — Issue new prescriptions for patients  
+![Issue prescription process](docs/screenshots/issue-prescription.png)
+
+❌ Cancel Prescription — Cancel prescriptions with audit trail  
+![Cancel prescription confirmation dialog](docs/screenshots/cancel-prescription.png)
+
 
 🖨️ Prescription Print — Printable prescription view
 ![Prescription print view](docs/screenshots/prescription-print.png)
@@ -100,21 +122,36 @@ This project was created as part of **HackArena 2.0 by Masaiverse x Platform Com
 📦 Stock Items — Medicine and equipment inventory
 ![Stock items management](docs/screenshots/stock-items-page.png)
 
-🏢 Platform Management — Multi-tenant administration (Super Admin)
-![Platform tenants management](docs/screenshots/platform-tenants.png)
-
 ### Patient Sharing
 
-🤝 Patient Sharing — Share patient records between hospitals
-![Patient sharing interface](docs/screenshots/sharing-page.png)
+🤝 Patient Record Sharing — Easily share patient records with other hospitals  
+![Patient record sharing dialog](docs/screenshots/patient-sharing-dialog.png)
 
-📤 Shared Patients — View patients shared with your hospital
-![Shared patients list](docs/screenshots/shared-patients.png)
+📝 Sharing Requests — Manage sharing requests
+![Sharing requests management](docs/screenshots/sharing-requests.png)
+
+
+### Super Admin
+📊 Platform Dashboard — Centralized dashboard for Super Admins  
+![Platform dashboard metrics](docs/screenshots/platform-dashboard.png)
+
+🏢 Tenant Management — Manage tenants (hospitals) at platform level  
+![Tenant management interface](docs/screenshots/platform-tenants.png)
+
+### Multilingual Support
+
+🌐 **Multilingual Interface** — The application is designed with provisions for multiple languages, allowing users to select their preferred language for a localized experience.
+
+![Login](docs/screenshots/login-hi.png)
+
+🈳 **Dynamic Translation** — Key interface elements are dynamically translated based on the chosen language, enhancing accessibility for diverse user groups.
+
+![Translated dashboard in Hindi](docs/screenshots/dashboard-hi.png)
 
 ### Mobile Experience
 
 📱 Responsive Design — Mobile-optimized interface
-![Mobile responsive view](docs/screenshots/mobile-dashboard.jpeg)
+![Mobile responsive view](docs/screenshots/mobile-dashboard.png)
 
 ---
 
@@ -802,19 +839,11 @@ For issues, questions, or contributions, please open an issue on GitHub.
 
 ## 🔒 Security & Code Quality
 
-### Recent Improvements
-
-- ✅ Enhanced demo mode with credential management
-- ✅ Improved date format configuration
-- ✅ Added comprehensive patient sharing features
-- ✅ Enhanced prescription workflow with stock integration
-- ✅ Improved appointment lifecycle management
-- ✅ Added IPD admission management
-- ✅ Enhanced role-based access control
-- ✅ Improved multi-tenant architecture
-- ✅ Added comprehensive error handling
-- ✅ Enhanced user experience with toast notifications
-- ✅ Improved form validation with Zod
-- ✅ Added internationalization support
+- Use ESLint for enforcing code style and preventing common mistakes
+- Write all code in TypeScript for type safety
+- Conduct code reviews via Pull Requests
+- Follow secure coding guidelines
+- Keep dependencies up-to-date and review for vulnerabilities
+- Run automated tests and static analysis tools
 
 **Last Updated:** December 2025

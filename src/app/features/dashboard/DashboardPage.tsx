@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PageToolbar from "@app/components/common/PageToolbar";
-import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@app/lib/apiClient";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -38,12 +37,13 @@ import {
 } from "@mui/icons-material";
 import { getAppointmentStatusLabel, getPrescriptionStatusLabel, getPrescriptionStatusColor } from "@app/lib/utils/statusUtils";
 import { formatDate } from "@app/lib/dateFormat";
-import { useMutation } from "@tanstack/react-query";
-import { refreshDemoData, type DemoRefreshRequest } from "@app/lib/api/admin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { startDemoRefresh } from "@app/lib/api/admin";
 import ConfirmationDialog from "@app/components/common/ConfirmationDialog";
 import { Button, TextField } from "@mui/material";
 import { useToast } from "@app/components/common/ToastProvider";
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@app/lib/constants/demoCredentials";
+import { useTaskStore } from "@app/store/taskStore";
 
 interface DashboardMetrics {
   patients_today: number;
@@ -221,7 +221,7 @@ const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
   const [trendsDateRange, setTrendsDateRange] = React.useState<string>("last_7_days");
   const [adminPendingTab, setAdminPendingTab] = React.useState<"ops" | "pharmacy">("ops");
   
@@ -229,65 +229,158 @@ const DashboardPage: React.FC = () => {
   const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
   const [seedDialogOpen, setSeedDialogOpen] = React.useState(false);
   const [resetDialogOpen, setResetDialogOpen] = React.useState(false);
+  const [freshenDialogOpen, setFreshenDialogOpen] = React.useState(false);
   const [freshenDays, setFreshenDays] = React.useState(7);
+  
+  // Task store - Dashboard only reads from store, TopBar handles polling
+  const { activeTask, setActiveTask } = useTaskStore();
 
-  // Demo maintenance mutations - MUST be called before any early returns
+  // Demo maintenance helpers - show immediately, even before API returns task_id
+  const startLocalTask = (action: "seed" | "freshen" | "reset") => {
+    setActiveTask({
+      taskId: null, // temporary: no server id yet
+      taskType:
+        action === "seed" ? "DEMO_SEED" : action === "freshen" ? "DEMO_FRESHEN" : "DEMO_RESET",
+      action,
+      status: "PENDING",
+      progress: 0,
+      message:
+        action === "seed"
+          ? "Starting seed operation..."
+          : action === "freshen"
+          ? "Starting freshen operation..."
+          : "Starting reset operation...",
+      error: null,
+      created_at: new Date().toISOString(),
+      started_at: null,
+      completed_at: null,
+    });
+  };
+
+  // Demo maintenance mutations - Start async tasks
   const seedMutation = useMutation({
-    mutationFn: async () => {
-      return await refreshDemoData({ action: "seed" });
+    mutationFn: async () => startDemoRefresh({ action: "seed" }),
+    onMutate: () => {
+      startLocalTask("seed");
     },
     onSuccess: (data) => {
-      const message = data.message || "";
-      showSuccess(
-        `Demo data seeded successfully. ${message}`
-      );
+      // IMPORTANT: set the real task id immediately so TopBar starts polling
+      // Keep the existing message from onMutate until polling updates it
+      setActiveTask({
+        taskId: data.task_id,
+        taskType: "DEMO_SEED",
+        action: "seed",
+        status: "PENDING",
+        progress: activeTask?.progress ?? 0,
+        message: activeTask?.message ?? "Starting seed operation...",
+        error: null,
+        created_at: activeTask?.created_at ?? new Date().toISOString(),
+        started_at: activeTask?.started_at ?? null,
+        completed_at: null,
+      });
       setSeedDialogOpen(false);
     },
     onError: (error: any) => {
+      // mark task as failed in bar
+      setActiveTask({
+        taskId: activeTask?.taskId ?? null,
+        taskType: "DEMO_SEED",
+        action: "seed",
+        status: "FAILED",
+        progress: 0,
+        message: "Failed to start seed operation",
+        error: error?.response?.data?.detail || "Failed to start seed operation",
+        created_at: new Date().toISOString(),
+        started_at: null,
+        completed_at: new Date().toISOString(),
+      });
       showError(
         error?.response?.data?.detail ||
           t("admin.demoSeedError", {
-            defaultValue: "Failed to seed demo data",
+            defaultValue: "Failed to start seed operation",
           })
       );
     },
   });
 
   const freshenMutation = useMutation({
-    mutationFn: async (days: number) => {
-      return await refreshDemoData({ action: "freshen", freshen_days: days });
+    mutationFn: async (days: number) => startDemoRefresh({ action: "freshen", freshen_days: days }),
+    onMutate: () => {
+      startLocalTask("freshen");
     },
     onSuccess: (data) => {
-      const message = data.message || "";
-      showSuccess(
-        `Demo data freshened successfully by ${data.freshen_days || 7} days. ${message}`
-      );
+      setActiveTask({
+        taskId: data.task_id,
+        taskType: "DEMO_FRESHEN",
+        action: "freshen",
+        status: "PENDING",
+        progress: activeTask?.progress ?? 0,
+        message: activeTask?.message ?? "Starting freshen operation...",
+        error: null,
+        created_at: activeTask?.created_at ?? new Date().toISOString(),
+        started_at: activeTask?.started_at ?? null,
+        completed_at: null,
+      });
     },
     onError: (error: any) => {
+      setActiveTask({
+        taskId: activeTask?.taskId ?? null,
+        taskType: "DEMO_FRESHEN",
+        action: "freshen",
+        status: "FAILED",
+        progress: 0,
+        message: "Failed to start freshen operation",
+        error: error?.response?.data?.detail || "Failed to start freshen operation",
+        created_at: new Date().toISOString(),
+        started_at: null,
+        completed_at: new Date().toISOString(),
+      });
       showError(
         error?.response?.data?.detail ||
           t("admin.demoFreshenError", {
-            defaultValue: "Failed to freshen demo data",
+            defaultValue: "Failed to start freshen operation",
           })
       );
     },
   });
 
   const resetMutation = useMutation({
-    mutationFn: async () => {
-      return await refreshDemoData({ action: "reset" });
+    mutationFn: async () => startDemoRefresh({ action: "reset" }),
+    onMutate: () => {
+      startLocalTask("reset");
     },
     onSuccess: (data) => {
-      const message = data.message || "";
-      showSuccess(
-        `Demo data reset successfully. ${message}`
-      );
+      setActiveTask({
+        taskId: data.task_id,
+        taskType: "DEMO_RESET",
+        action: "reset",
+        status: "PENDING",
+        progress: activeTask?.progress ?? 0,
+        message: activeTask?.message ?? "Starting reset operation...",
+        error: null,
+        created_at: activeTask?.created_at ?? new Date().toISOString(),
+        started_at: activeTask?.started_at ?? null,
+        completed_at: null,
+      });
+      setResetDialogOpen(false);
     },
     onError: (error: any) => {
+      setActiveTask({
+        taskId: activeTask?.taskId ?? null,
+        taskType: "DEMO_RESET",
+        action: "reset",
+        status: "FAILED",
+        progress: 0,
+        message: "Failed to start reset operation",
+        error: error?.response?.data?.detail || "Failed to start reset operation",
+        created_at: new Date().toISOString(),
+        started_at: null,
+        completed_at: new Date().toISOString(),
+      });
       showError(
         error?.response?.data?.detail ||
           t("admin.demoResetError", {
-            defaultValue: "Failed to reset demo data",
+            defaultValue: "Failed to start reset operation",
           })
       );
     },
@@ -445,7 +538,12 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleFreshen = () => {
+    setFreshenDialogOpen(true);
+  };
+
+  const handleConfirmFreshen = () => {
     freshenMutation.mutate(freshenDays);
+    setFreshenDialogOpen(false);
   };
 
   const handleReset = () => {
@@ -607,7 +705,12 @@ const DashboardPage: React.FC = () => {
                     color="error"
                     startIcon={<PlayArrowIcon />}
                     onClick={handleSeed}
-                    disabled={seedMutation.isPending || freshenMutation.isPending || resetMutation.isPending}
+                    disabled={
+                      seedMutation.isPending ||
+                      freshenMutation.isPending ||
+                      resetMutation.isPending ||
+                      (activeTask?.status === "PENDING" || activeTask?.status === "RUNNING")
+                    }
                   >
                     {t("admin.seedDemoData", { defaultValue: "Seed Demo Data" })}
                   </Button>
@@ -616,7 +719,12 @@ const DashboardPage: React.FC = () => {
                     color="warning"
                     startIcon={<WarningIcon />}
                     onClick={handleReset}
-                    disabled={seedMutation.isPending || freshenMutation.isPending || resetMutation.isPending}
+                    disabled={
+                      seedMutation.isPending ||
+                      freshenMutation.isPending ||
+                      resetMutation.isPending ||
+                      (activeTask?.status === "PENDING" || activeTask?.status === "RUNNING")
+                    }
                   >
                     {t("admin.resetDemoData", { defaultValue: "Reset Demo Data" })}
                   </Button>
@@ -635,7 +743,12 @@ const DashboardPage: React.FC = () => {
                       color="primary"
                       startIcon={<RefreshIcon />}
                       onClick={handleFreshen}
-                      disabled={seedMutation.isPending || freshenMutation.isPending || resetMutation.isPending}
+                      disabled={
+                        seedMutation.isPending ||
+                        freshenMutation.isPending ||
+                        resetMutation.isPending ||
+                        (activeTask?.status === "PENDING" || activeTask?.status === "RUNNING")
+                      }
                     >
                       {t("admin.freshenDemoData", { defaultValue: "Freshen Demo Data" })}
                     </Button>
@@ -757,6 +870,22 @@ const DashboardPage: React.FC = () => {
           confirmText={t("admin.seed", { defaultValue: "Seed" })}
           confirmColor="error"
           isLoading={seedMutation.isPending}
+        />
+
+        {/* Freshen Confirmation Dialog */}
+        <ConfirmationDialog
+          open={freshenDialogOpen}
+          onClose={() => setFreshenDialogOpen(false)}
+          onConfirm={handleConfirmFreshen}
+          title={t("admin.freshenDemoDataTitle", { defaultValue: "Freshen Demo Data" })}
+          message={t("admin.freshenDemoDataConfirm", {
+            defaultValue:
+              `This will shift all demo data dates forward by ${freshenDays} days. This operation may take a few minutes. Continue?`,
+            days: freshenDays,
+          })}
+          confirmText={t("admin.freshen", { defaultValue: "Freshen" })}
+          confirmColor="primary"
+          isLoading={freshenMutation.isPending}
         />
 
         {/* Reset Confirmation Dialog */}
@@ -892,9 +1021,9 @@ const DashboardPage: React.FC = () => {
                 >
                   {metrics.active_ipd_admissions || 0}
                 </Typography>
-              </Box>
-            </Paper>
-          </Grid>
+                </Box>
+              </Paper>
+            </Grid>
         )}
 
         {/* A3: Pending Actions (Role-aware) */}

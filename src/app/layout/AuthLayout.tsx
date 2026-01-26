@@ -1,13 +1,15 @@
 // src/app/layout/AuthLayout.tsx
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Box, Container, Paper } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@app/components/common/LanguageSwitcher";
 import Footer from "@app/components/layout/Footer";
+import { AppRoutes } from "@app/routes";
 
 const AuthLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   const logoSrc =
     i18n.language && i18n.language.startsWith("hi")
@@ -60,21 +62,27 @@ const AuthLayout: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 2,
+              flexWrap: { xs: "nowrap", sm: "wrap" },
+              gap: { xs: 1, sm: 2 },
             }}
           >
             <Box
               component="img"
               src={logoSrc}
               alt={t("appTitle")}
+              onClick={() => navigate(AppRoutes.LANDING)}
               sx={{
-                height: 50,
+                height: { xs: 36, sm: 50 },
                 width: "auto",
                 flexShrink: 0,
+                maxWidth: { xs: "180px", sm: "none" },
+                cursor: "pointer",
+                "&:hover": {
+                  opacity: 0.8,
+                },
               }}
             />
-            <Box sx={{ ml: "auto" }}>
+            <Box sx={{ ml: { xs: "auto", sm: "auto" }, flexShrink: 0 }}>
               <LanguageSwitcher />
             </Box>
           </Box>

@@ -425,8 +425,7 @@ const LandingPage: React.FC = () => {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  setTabValue(0);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigate(AppRoutes.LOGIN);
                 }}
                 sx={{ 
                   borderRadius: 2,
@@ -442,8 +441,7 @@ const LandingPage: React.FC = () => {
               <Button
                 variant="contained"
                 onClick={() => {
-                  setTabValue(1);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigate(AppRoutes.TENANT_REGISTER);
                 }}
                 sx={{ 
                   borderRadius: 2,
@@ -537,8 +535,7 @@ const LandingPage: React.FC = () => {
                       variant="contained"
                       size="large"
                       onClick={() => {
-                        setTabValue(1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        navigate(AppRoutes.TENANT_REGISTER);
                       }}
                       sx={{
                         px: 5,
@@ -557,8 +554,7 @@ const LandingPage: React.FC = () => {
                       variant="outlined"
                       size="large"
                       onClick={() => {
-                        setTabValue(0);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        navigate(AppRoutes.LOGIN);
                       }}
                       sx={{
                         px: 5,
@@ -1223,8 +1219,7 @@ const LandingPage: React.FC = () => {
                   size="small"
                   variant="outlined"
                   onClick={() => {
-                    setTabValue(0);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    navigate(AppRoutes.LOGIN);
                   }}
                   sx={{
                     fontSize: "0.75rem",
@@ -1240,8 +1235,7 @@ const LandingPage: React.FC = () => {
                   size="small"
                   variant="contained"
                   onClick={() => {
-                    setTabValue(1);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    navigate(AppRoutes.TENANT_REGISTER);
                   }}
                   sx={{
                     fontSize: "0.75rem",
